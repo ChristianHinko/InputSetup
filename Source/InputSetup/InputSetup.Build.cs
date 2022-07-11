@@ -15,7 +15,9 @@ public class InputSetup : ModuleRules
 			{
 				"CoreUObject",
 				"Engine",
-				"EnhancedInput"
+				"EnhancedInput",
+				"GameplayTags",
+				"DeveloperSettings"
 			}
 		);
 	}
