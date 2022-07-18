@@ -6,3 +6,5 @@
 
 
 DEFINE_LOG_CATEGORY(LogISInputSetupModule)
+
+DEFINE_LOG_CATEGORY(LogISDeveloperSettings)

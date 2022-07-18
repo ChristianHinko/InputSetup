@@ -10,11 +10,11 @@ public class InputSetup : ModuleRules
 		PrivatePCHHeaderFile = "Private/InputSetupPrivatePCH.h";
 
 		PublicDependencyModuleNames.AddRange(new string[] { "Core" });
+		PrivateDependencyModuleNames.AddRange(new string[] { "CoreUObject", "Engine" });
+
 		PrivateDependencyModuleNames.AddRange(
 			new string[]
 			{
-				"CoreUObject",
-				"Engine",
 				"EnhancedInput",
 				"GameplayTags",
 				"DeveloperSettings"

@@ -9,6 +9,7 @@
 
 
 class UPlayerMappableInputConfig;
+struct FGameplayTag;
 
 
 
@@ -37,7 +38,4 @@ public:
 	void PawnClientRestart();
 	/** Call at the end of your Pawn's SetupPlayerInputComponent() event */
 	void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent);
-
-protected:
-
 };

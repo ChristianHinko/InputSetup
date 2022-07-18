@@ -7,3 +7,5 @@
 
 
 DECLARE_LOG_CATEGORY_EXTERN(LogISInputSetupModule, Log, All)
+
+DECLARE_LOG_CATEGORY_EXTERN(LogISDeveloperSettings, Log, All)

@@ -5,7 +5,6 @@
 
 #include "GameFramework/Pawn.h"
 #include "EnhancedInputComponent.h"
-#include "InputTriggers.h"
 #include "PlayerMappableInputConfig.h"
 #include "EnhancedInputSubsystems.h"
 
@@ -49,6 +48,5 @@ void UISActorComponent_PawnExtension::PawnClientRestart()
 
 void UISActorComponent_PawnExtension::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
-	// Bind to Ability input actions and tell ability system that the Ability's input was pressed/released
 
 }
