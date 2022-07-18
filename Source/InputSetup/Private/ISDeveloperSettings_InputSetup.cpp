@@ -41,7 +41,7 @@ void UISDeveloperSettings_InputSetup::AddRuntimeInputAction(const FGameplayTag& 
 {
 	if (GameProjectInputActions.Contains(InGameplayTag))
 	{
-		UE_LOG(LogISDeveloperSettings, Error, TEXT("%s() Tried adding an Input Action with same tag as game project's. Culprit tag: [%s]"), *(InGameplayTag.ToString()));
+		UE_LOG(LogISDeveloperSettings, Error, TEXT("%s() Tried adding an Input Action with same tag as game project's. Culprit tag: [%s]"), ANSI_TO_TCHAR(__FUNCTION__), *(InGameplayTag.ToString()));
 		check(0);
 		return;
 	}
@@ -59,12 +59,13 @@ void UISDeveloperSettings_InputSetup::AddRuntimeInputAction(const FGameplayTag& 
 	InputActions.Add(TagInputActionPair);
 
 	OnRuntimeInputActionAdded.Broadcast(TagInputActionPair);
+	UE_LOG(LogISDeveloperSettings, Log, TEXT("%s() New Input Action [%s] added during runtime."), ANSI_TO_TCHAR(__FUNCTION__), *(InGameplayTag.ToString()));
 }
 void UISDeveloperSettings_InputSetup::RemoveRuntimeInputAction(const FGameplayTag& InGameplayTag)
 {
 	if (GameProjectInputActions.Contains(InGameplayTag))
 	{
-		UE_LOG(LogISDeveloperSettings, Error, TEXT("%s() Tried removing a game project's Input Action. Culprit tag: [%s]"), *(InGameplayTag.ToString()));
+		UE_LOG(LogISDeveloperSettings, Error, TEXT("%s() Tried removing a game project's Input Action. Culprit tag: [%s]"), ANSI_TO_TCHAR(__FUNCTION__), *(InGameplayTag.ToString()));
 		check(0);
 		return;
 	}
@@ -76,5 +77,6 @@ void UISDeveloperSettings_InputSetup::RemoveRuntimeInputAction(const FGameplayTa
 		InputActions.Remove(InGameplayTag);
 
 		OnRuntimeInputActionRemoved.Broadcast(TPair<FGameplayTag, TSoftObjectPtr<const UInputAction>>(InGameplayTag, FoundInputAction->LoadSynchronous()));
+		UE_LOG(LogISDeveloperSettings, Log, TEXT("%s() Input Action [%s] removed during runtime."), ANSI_TO_TCHAR(__FUNCTION__), *(InGameplayTag.ToString()));
 	}
 }
