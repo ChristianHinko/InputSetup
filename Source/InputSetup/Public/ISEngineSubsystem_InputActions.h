@@ -1,0 +1,65 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+#pragma once
+
+#include "Subsystems/EngineSubsystem.h"
+
+#include "ISEngineSubsystem_InputActions.generated.h"
+
+
+struct FGameplayTag;
+class UInputAction;
+class UISPrimaryDataAsset_PluginInputActions;
+
+
+
+DECLARE_MULTICAST_DELEGATE_OneParam(FISInputActionSetupDelegate, const TPair<PREPROCESSOR_COMMA_SEPARATED(FGameplayTag, TWeakObjectPtr<const UInputAction>)>&);
+
+
+/**
+ * Subsystem holding all Input Actions for your game (any plugin may contribute to the Input Actions via UISPrimaryDataAsset_PluginInputActions).
+ * 
+ * Adding Input Action(s) from your game: Configure InputSetup in project settings
+ * Adding Input Action(s) from a plugin:  UISPrimaryDataAsset_PluginInputActions
+ */
+UCLASS(config=InputActions)
+class INPUTSETUP_API UISEngineSubsystem_InputActions : public UEngineSubsystem
+{
+	GENERATED_BODY()
+
+private:
+	/** Combined map of both GameProjectInputActions and PluginInputActions */
+	UPROPERTY()
+		TMap<FGameplayTag, TWeakObjectPtr<const UInputAction>> InputActions;
+
+	/** For the game project to add Input Actions via Config (through the project settings). */
+	UPROPERTY(EditDefaultsOnly, Config)
+		TMap<FGameplayTag, TSoftObjectPtr<const UInputAction>> GameProjectInputActions;
+	/** To allow plugins to contribute to the InputActions. */
+	UPROPERTY(VisibleDefaultsOnly)
+		TSet<TObjectPtr<const UISPrimaryDataAsset_PluginInputActions>> PluginInputActions;
+
+public:
+	UISEngineSubsystem_InputActions();
+
+	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
+	virtual void Deinitialize() override;
+
+
+	/** Get all Input Actions. These are paired with Gameplay Tags which identify them. */
+	const TMap<FGameplayTag, TWeakObjectPtr<const UInputAction>>& GetInputActions() const { return InputActions; }
+
+	/** Get an Input Action using its Gameplay Tag. */
+	const UInputAction* GetInputAction(const FGameplayTag& InTag) const;
+
+	mutable FISInputActionSetupDelegate OnPluginInputActionAdded;
+	mutable FISInputActionSetupDelegate OnPluginInputActionRemoved;
+
+protected:
+	virtual void PostInitProperties() override; // after Config is loaded
+
+	void OnAssetManagerCreated();
+
+	void AddPluginInputActions(const UISPrimaryDataAsset_PluginInputActions* InPluginInputActions);
+	void RemovePluginInputActions(const UISPrimaryDataAsset_PluginInputActions* InPluginInputActions);
+};

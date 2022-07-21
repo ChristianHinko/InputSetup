@@ -6,9 +6,6 @@ Plugin improving the input workflow in C++. Makes use of Gameplay Tags to identi
 - EnhancedInput
 - DeveloperSettings
 
-## TODO:
-- Move Input Action map to be contained in an EngineSubsystem
-
 Collaborators: Brian2524, ChristianHinko
 
 Current engine version: 5.0.3

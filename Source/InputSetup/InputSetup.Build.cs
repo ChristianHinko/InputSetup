@@ -17,7 +17,7 @@ public class InputSetup : ModuleRules
 			{
 				"EnhancedInput",
 				"GameplayTags",
-				"DeveloperSettings"
+				"Projects"
 			}
 		);
 	}

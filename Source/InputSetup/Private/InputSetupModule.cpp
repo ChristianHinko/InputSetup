@@ -3,18 +3,14 @@
 
 #include "InputSetupModule.h"
 
-
-
 #define LOCTEXT_NAMESPACE "FInputSetupModule"
 
 void FInputSetupModule::StartupModule()
 {
-
 }
 
 void FInputSetupModule::ShutdownModule()
 {
-
 }
 
 #undef LOCTEXT_NAMESPACE
