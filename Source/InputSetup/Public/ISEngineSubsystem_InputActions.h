@@ -50,7 +50,8 @@ public:
 	const TMap<FGameplayTag, TWeakObjectPtr<const UInputAction>>& GetInputActions() const { return InputActions; }
 
 	/** Get an Input Action using its Gameplay Tag. */
-	const UInputAction* GetInputAction(const FGameplayTag& InTag) const;
+	UFUNCTION(BlueprintPure, Category = "InputActions")
+		const UInputAction* GetInputAction(const FGameplayTag& InTag) const;
 
 	mutable FISInputActionSetupDelegate OnPluginInputActionAdded;
 	mutable FISInputActionSetupDelegate OnPluginInputActionRemoved;
