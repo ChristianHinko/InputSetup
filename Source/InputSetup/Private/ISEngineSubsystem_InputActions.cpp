@@ -4,11 +4,13 @@
 #include "ISEngineSubsystem_InputActions.h"
 
 #include "InputAction.h"
-#include "ISettingsModule.h"
 #include "Interfaces/IPluginManager.h"
 #include "PluginDescriptor.h"
 #include "Engine/AssetManager.h"
 #include "ISPrimaryDataAsset_PluginInputActions.h"
+#if WITH_UNREAL_DEVELOPER_TOOLS
+#include "ISettingsModule.h"
+#endif // WITH_UNREAL_DEVELOPER_TOOLS
 
 
 
@@ -50,6 +52,7 @@ void UISEngineSubsystem_InputActions::Initialize(FSubsystemCollectionBase& Colle
 {
 	Super::Initialize(Collection);
 
+#if WITH_UNREAL_DEVELOPER_TOOLS
 	ISettingsModule* SettingsModule = FModuleManager::GetModulePtr<ISettingsModule>(TEXT("Settings"));
 	SettingsModule->RegisterSettings(
 		FName(TEXT("Project")),
@@ -59,6 +62,7 @@ void UISEngineSubsystem_InputActions::Initialize(FSubsystemCollectionBase& Colle
 		FText::FromString(TEXT("Input Actions")),
 		this
 	);
+#endif // WITH_UNREAL_DEVELOPER_TOOLS
 
 	UAssetManager::CallOrRegister_OnAssetManagerCreated(FSimpleMulticastDelegate::FDelegate::CreateUObject(this, &ThisClass::OnAssetManagerCreated));
 }
@@ -66,12 +70,14 @@ void UISEngineSubsystem_InputActions::Deinitialize()
 {
 	Super::Deinitialize();
 
+#if WITH_UNREAL_DEVELOPER_TOOLS
 	ISettingsModule* SettingsModule = FModuleManager::GetModulePtr<ISettingsModule>(TEXT("Settings"));
 	SettingsModule->UnregisterSettings(
 		FName(TEXT("Project")),
 		FName(TEXT("Plugins")),
 		FName(TEXT("InputSetup"))
 	);
+#endif // WITH_UNREAL_DEVELOPER_TOOLS
 }
 
 void UISEngineSubsystem_InputActions::OnAssetManagerCreated()
@@ -88,7 +94,7 @@ void UISEngineSubsystem_InputActions::OnAssetManagerCreated()
 				})
 			)
 		{
-			const FSoftObjectPath InputActionsDataAssetPath = FSoftObjectPath(TEXT("/") + Plugin->GetName() / TEXT("Input") / TEXT("PDA_InputActions.PDA_InputActions"));
+			const FSoftObjectPath InputActionsDataAssetPath = Plugin->GetMountedAssetPath() / TEXT("Input") / TEXT("PDA_InputActions.PDA_InputActions");
 			const UObject* LoadedObject = AssetManager.GetStreamableManager().LoadSynchronous(InputActionsDataAssetPath);
 			const UISPrimaryDataAsset_PluginInputActions* InputActionsDataAsset = Cast<UISPrimaryDataAsset_PluginInputActions>(LoadedObject);
 			AddPluginInputActions(InputActionsDataAsset);
