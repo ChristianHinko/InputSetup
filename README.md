@@ -4,7 +4,7 @@ Plugin improving the input workflow in C++. Makes use of Gameplay Tags to identi
 ## Dependencies
 - GameplayTags
 - EnhancedInput
-- DeveloperSettings
+- Projects
 
 Collaborators: Brian2524, ChristianHinko
 
