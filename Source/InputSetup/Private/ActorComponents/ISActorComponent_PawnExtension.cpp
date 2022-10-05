@@ -17,7 +17,7 @@ UISActorComponent_PawnExtension::UISActorComponent_PawnExtension(const FObjectIn
 }
 
 
-void UISActorComponent_PawnExtension::PawnClientRestart()
+void UISActorComponent_PawnExtension::OnOwnerPawnClientRestart()
 {
 	// Clear and add input configs since pawn restarting
 	const APawn* OwningPawn = Cast<APawn>(GetOwner());
@@ -46,7 +46,7 @@ void UISActorComponent_PawnExtension::PawnClientRestart()
 	}
 }
 
-void UISActorComponent_PawnExtension::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+void UISActorComponent_PawnExtension::OnOwnerSetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 
 }

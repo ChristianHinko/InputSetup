@@ -15,12 +15,6 @@ struct FGameplayTag;
 
 /**
  * Sets up input for Pawns.
- * 
- * ----------------------------------
- *				Setup
- * ----------------------------------
- * 
- * 
  */
 UCLASS(ClassGroup=(InputSetup), meta=(BlueprintSpawnableComponent), Within=Pawn)
 class INPUTSETUP_API UISActorComponent_PawnExtension : public UActorComponent
@@ -35,7 +29,7 @@ public:
 		TArray<TObjectPtr<UPlayerMappableInputConfig>> DefaultPlayerMappableInputConfigs;
 
 	/** Call at the end of your Pawn's PawnClientRestart() event */
-	void PawnClientRestart();
+	void OnOwnerPawnClientRestart();
 	/** Call at the end of your Pawn's SetupPlayerInputComponent() event */
-	void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent);
+	void OnOwnerSetupPlayerInputComponent(UInputComponent* PlayerInputComponent);
 };

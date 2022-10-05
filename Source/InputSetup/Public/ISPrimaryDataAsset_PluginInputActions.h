@@ -21,7 +21,7 @@ UCLASS()
 class INPUTSETUP_API UISPrimaryDataAsset_PluginInputActions : public UPrimaryDataAsset
 {
 	GENERATED_BODY()
-	
+
 public:
 	UPROPERTY(EditDefaultsOnly)
 		TMap<FGameplayTag, TObjectPtr<const UInputAction>> InputActionsToAdd;

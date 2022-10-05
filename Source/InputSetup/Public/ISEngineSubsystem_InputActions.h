@@ -29,7 +29,7 @@ class INPUTSETUP_API UISEngineSubsystem_InputActions : public UEngineSubsystem
 
 private:
 	/** Combined map of both GameProjectInputActions and PluginInputActions */
-	UPROPERTY()
+	UPROPERTY(Transient)
 		TMap<FGameplayTag, TWeakObjectPtr<const UInputAction>> InputActions;
 
 	/** For the game project to add Input Actions via Config (through the project settings). */

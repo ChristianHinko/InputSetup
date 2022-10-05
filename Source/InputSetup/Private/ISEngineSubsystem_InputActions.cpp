@@ -155,7 +155,7 @@ void UISEngineSubsystem_InputActions::RemovePluginInputActions(const UISPrimaryD
 	}
 	// Remove the data asset and all of its Input Actions
 	UE_LOG(LogISInputActionsSubsystem, Log, TEXT("%s() Removing Input Actions data asset [%s] at plugin."), ANSI_TO_TCHAR(__FUNCTION__), *(InPluginInputActions->GetFName().ToString()));
-	
+
 	PluginInputActions.Remove(InPluginInputActions);
 	for (const TPair<FGameplayTag, TWeakObjectPtr<const UInputAction>>& PluginInputAction : InPluginInputActions->InputActionsToAdd)
 	{
