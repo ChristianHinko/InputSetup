@@ -32,7 +32,7 @@ private:
 	UPROPERTY(Transient)
 		TMap<FGameplayTag, TWeakObjectPtr<const UInputAction>> InputActions;
 
-	/** For the game project to add Input Actions via Config (through the project settings). */
+	/** Game project Input Actions added via project settings */
 	UPROPERTY(EditDefaultsOnly, Config)
 		TMap<FGameplayTag, TSoftObjectPtr<const UInputAction>> GameProjectInputActions;
 	/** To allow plugins to contribute to the InputActions via "Input/PDA_InputActions.uasset */
