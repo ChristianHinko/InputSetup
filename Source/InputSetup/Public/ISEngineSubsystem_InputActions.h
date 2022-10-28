@@ -35,8 +35,8 @@ private:
 	/** For the game project to add Input Actions via Config (through the project settings). */
 	UPROPERTY(EditDefaultsOnly, Config)
 		TMap<FGameplayTag, TSoftObjectPtr<const UInputAction>> GameProjectInputActions;
-	/** To allow plugins to contribute to the InputActions. */
-	UPROPERTY(VisibleDefaultsOnly)
+	/** To allow plugins to contribute to the InputActions via "Input/PDA_InputActions.uasset */
+	UPROPERTY(VisibleDefaultsOnly, DisplayName = "Plugin Input Actions (readonly)")
 		TSet<TObjectPtr<const UISPrimaryDataAsset_PluginInputActions>> PluginInputActions;
 
 public:
