@@ -12,10 +12,6 @@
  */
 namespace ISNativeGameplayTags
 {
-#if 0
-	// Ability Tags
-	INPUTSETUP_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Ability_Fire)
-	INPUTSETUP_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Ability_Reload)
-	INPUTSETUP_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Ability_ADS)
-#endif
+	INPUTSETUP_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(InputAction) // parent tag of all InputAction tags
+	INPUTSETUP_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(InputAction_None) // InputAction tag to use when you want to specify that there is no Input Action
 }
