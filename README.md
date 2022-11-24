@@ -8,5 +8,4 @@ Plugin improving the input workflow in C++. Makes use of Gameplay Tags to identi
 
 Collaborators: Brian2524, ChristianHinko
 
-Current engine version: 5.0.3
-                                       
+Current engine version: 5.1.0
