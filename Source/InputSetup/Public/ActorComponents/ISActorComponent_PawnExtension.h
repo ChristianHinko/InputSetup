@@ -26,7 +26,7 @@ public:
 
 
 	UPROPERTY(EditAnywhere, Category = "Input|Config")
-		TArray<TObjectPtr<UPlayerMappableInputConfig>> DefaultPlayerMappableInputConfigs;
+		TArray<TObjectPtr<UPlayerMappableInputConfig>> PlayerMappableInputConfigsToAdd;
 
 	/** Call at the end of your Pawn's PawnClientRestart() event */
 	void OnOwnerPawnClientRestart();

@@ -36,7 +36,7 @@ void UISActorComponent_PawnExtension::OnOwnerPawnClientRestart()
 					EnhancedInputLocalPlayerSubsystem->ClearAllMappings();
 
 					// Add default configs
-					for (UPlayerMappableInputConfig* PlayerMappableInputConfig : DefaultPlayerMappableInputConfigs)
+					for (UPlayerMappableInputConfig* PlayerMappableInputConfig : PlayerMappableInputConfigsToAdd)
 					{
 						EnhancedInputLocalPlayerSubsystem->AddPlayerMappableConfig(PlayerMappableInputConfig);
 					}
