@@ -40,9 +40,9 @@ void UISEngineSubsystem_InputActions::PostInitProperties() // after Config is lo
 
 const UInputAction* UISEngineSubsystem_InputActions::GetInputAction(const FGameplayTag& InTag) const
 {
-	if (const TWeakObjectPtr<const UInputAction>* InputActionFound = InputActions.Find(InTag))
+	if (const TWeakObjectPtr<const UInputAction>* FoundInputAction = InputActions.Find(InTag))
 	{
-		return InputActionFound->Get();
+		return FoundInputAction->Get();
 	}
 
 	return nullptr;
