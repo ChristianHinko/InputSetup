@@ -45,8 +45,3 @@ void UISActorComponent_PawnExtension::OnOwnerPawnClientRestart()
 		}
 	}
 }
-
-void UISActorComponent_PawnExtension::OnOwnerSetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-
-}

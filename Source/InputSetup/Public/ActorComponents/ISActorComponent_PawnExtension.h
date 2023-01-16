@@ -30,6 +30,4 @@ public:
 
 	/** Call at the end of your Pawn's PawnClientRestart() event */
 	void OnOwnerPawnClientRestart();
-	/** Call at the end of your Pawn's SetupPlayerInputComponent() event */
-	void OnOwnerSetupPlayerInputComponent(UInputComponent* PlayerInputComponent);
 };
