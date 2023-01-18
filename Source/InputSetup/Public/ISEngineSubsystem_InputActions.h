@@ -53,6 +53,10 @@ public:
 	UFUNCTION(BlueprintPure, Category = "InputActions")
 		const UInputAction* GetInputAction(const FGameplayTag& InTag) const;
 
+
+	void AddPluginInputActions(const UISPrimaryDataAsset_PluginInputActions* InPluginInputActions);
+	void RemovePluginInputActions(const UISPrimaryDataAsset_PluginInputActions* InPluginInputActions);
+
 	mutable FISInputActionSetupDelegate OnPluginInputActionAdded;
 	mutable FISInputActionSetupDelegate OnPluginInputActionRemoved;
 
@@ -60,7 +64,4 @@ protected:
 	virtual void PostInitProperties() override; // after Config is loaded
 
 	void OnAssetManagerCreated();
-
-	void AddPluginInputActions(const UISPrimaryDataAsset_PluginInputActions* InPluginInputActions);
-	void RemovePluginInputActions(const UISPrimaryDataAsset_PluginInputActions* InPluginInputActions);
 };
