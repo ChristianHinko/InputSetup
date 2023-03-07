@@ -10,6 +10,7 @@
 struct FGameplayTag;
 class UInputAction;
 class UISPrimaryDataAsset_PluginInputActions;
+class IPlugin;
 
 
 
@@ -64,4 +65,10 @@ protected:
 	virtual void PostInitProperties() override; // after Config is loaded
 
 	void OnAssetManagerCreated();
+
+	/**
+	 * Loads the PluginInputActions data asset if the plugin depends on us.
+	 * NOTE: Does not check whether the plugin content is mounted or not, e.g., via FPackageName::MountPointExists().
+	 */
+	static const UISPrimaryDataAsset_PluginInputActions* TryGetPluginInputActionsFromPlugin(const TSharedRef<IPlugin>& InPlugin);
 };

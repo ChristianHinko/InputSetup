@@ -82,24 +82,61 @@ void UISEngineSubsystem_InputActions::Deinitialize()
 
 void UISEngineSubsystem_InputActions::OnAssetManagerCreated()
 {
-	UAssetManager& AssetManager = UAssetManager::Get();
-
-	// For any plugins depending on us, load any Input Actions, if any, that they want to add (via their "Input" folder)
+	// Check for plugins with PluginInputActions
 	for (const TSharedRef<IPlugin>& Plugin : IPluginManager::Get().GetEnabledPluginsWithContent())
 	{
-		if (Plugin->GetDescriptor().Plugins.ContainsByPredicate(
-				[](const FPluginReferenceDescriptor& InPluginReferenceDescriptor)
-				{
-					return (InPluginReferenceDescriptor.bEnabled) && (InPluginReferenceDescriptor.Name == TEXT(UE_PLUGIN_NAME));
-				})
-			)
+		if (FPackageName::MountPointExists(Plugin->GetMountedAssetPath())) // if the plugin's content is mounted
 		{
-			const FSoftObjectPath InputActionsDataAssetPath = Plugin->GetMountedAssetPath() / TEXT("Input") / TEXT("PDA_InputActions.PDA_InputActions");
-			const UObject* LoadedObject = AssetManager.GetStreamableManager().LoadSynchronous(InputActionsDataAssetPath);
-			const UISPrimaryDataAsset_PluginInputActions* InputActionsDataAsset = Cast<UISPrimaryDataAsset_PluginInputActions>(LoadedObject);
-			AddPluginInputActions(InputActionsDataAsset);
+			const UISPrimaryDataAsset_PluginInputActions* PluginPluginInputActions = TryGetPluginInputActionsFromPlugin(Plugin);
+			if (IsValid(PluginPluginInputActions))
+			{
+				AddPluginInputActions(PluginPluginInputActions);
+			}
 		}
 	}
+
+	// Listen for dynamically loaded and unloaded plugins, e.g., Game Features
+	FPackageName::OnContentPathMounted().AddWeakLambda(this,
+		[this](const FString& InAssetPath, const FString& InContentPath)
+		{
+			// See if there is a new PluginInputAcions to add
+			const TSharedPtr<IPlugin>& Plugin = IPluginManager::Get().FindPluginFromPath(InAssetPath);
+			if (Plugin.IsValid())
+			{
+				AddPluginInputActions(TryGetPluginInputActionsFromPlugin(Plugin.ToSharedRef()));
+			}
+		}
+	);
+	FPackageName::OnContentPathDismounted().AddWeakLambda(this,
+		[this](const FString& InAssetPath, const FString& InContentPath)
+		{
+			// See if there is a PluginInputAcions to remove
+			const TSharedPtr<IPlugin>& Plugin = IPluginManager::Get().FindPluginFromPath(InAssetPath);
+			if (Plugin.IsValid())
+			{
+				RemovePluginInputActions(TryGetPluginInputActionsFromPlugin(Plugin.ToSharedRef()));
+			}
+		}
+	);
+}
+
+const UISPrimaryDataAsset_PluginInputActions* UISEngineSubsystem_InputActions::TryGetPluginInputActionsFromPlugin(const TSharedRef<IPlugin>& InPlugin)
+{
+	// Load the PluginInputActions data asset from the plugin if they depend on us
+	if (InPlugin->GetDescriptor().Plugins.ContainsByPredicate(
+			[](const FPluginReferenceDescriptor& InPluginReferenceDescriptor)
+			{
+				return (InPluginReferenceDescriptor.bEnabled) && (InPluginReferenceDescriptor.Name == TEXT(UE_PLUGIN_NAME));
+			})
+		)
+	{
+		const FSoftObjectPath InputActionsDataAssetPath = InPlugin->GetMountedAssetPath() / TEXT("Input") / TEXT("PDA_InputActions.PDA_InputActions");
+		const UObject* LoadedObject = UAssetManager::GetIfValid()->GetStreamableManager().LoadSynchronous(InputActionsDataAssetPath);
+		const UISPrimaryDataAsset_PluginInputActions* InputActionsDataAsset = Cast<UISPrimaryDataAsset_PluginInputActions>(LoadedObject);
+		return InputActionsDataAsset;
+	}
+
+	return nullptr;
 }
 
 void UISEngineSubsystem_InputActions::AddPluginInputActions(const UISPrimaryDataAsset_PluginInputActions* InPluginInputActions)
@@ -147,7 +184,7 @@ void UISEngineSubsystem_InputActions::RemovePluginInputActions(const UISPrimaryD
 	}
 
 	// Make sure we have this data asset
-	if (PluginInputActions.Contains(InPluginInputActions))
+	if (PluginInputActions.Contains(InPluginInputActions) == false)
 	{
 		UE_LOG(LogISInputActionsSubsystem, Error, TEXT("%s() Input Actions data asset [%s] does not exist in the set."), ANSI_TO_TCHAR(__FUNCTION__), *(InPluginInputActions->GetFName().ToString()));
 		check(0);
