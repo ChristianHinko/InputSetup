@@ -4,13 +4,13 @@
 #include "ISEngineSubsystem_InputActions.h"
 
 #include "InputAction.h"
-#include "Interfaces/IPluginManager.h"
-#include "PluginDescriptor.h"
 #include "Engine/AssetManager.h"
 #include "ISPrimaryDataAsset_PluginInputActions.h"
 #if WITH_EDITOR
 #include "ISettingsModule.h"
 #endif // WITH_EDITOR
+#include "BlueprintFunctionLibraries/GCBlueprintFunctionLibrary_ContentTools.h"
+#include "Interfaces/IPluginManager.h"
 
 
 
@@ -82,123 +82,85 @@ void UISEngineSubsystem_InputActions::Deinitialize()
 
 void UISEngineSubsystem_InputActions::OnAssetManagerCreated()
 {
-	// Check for plugins with PluginInputActions
-	for (const TSharedRef<IPlugin>& Plugin : IPluginManager::Get().GetEnabledPluginsWithContent())
-	{
-		if (FPackageName::MountPointExists(Plugin->GetMountedAssetPath())) // if the plugin's content is mounted
-		{
-			const UISPrimaryDataAsset_PluginInputActions* PluginPluginInputActions = TryGetPluginInputActionsFromPlugin(Plugin);
-			if (IsValid(PluginPluginInputActions))
-			{
-				AddPluginInputActions(PluginPluginInputActions);
-			}
-		}
-	}
-
-	// Listen for dynamically loaded and unloaded plugins, e.g., Game Features
-	FPackageName::OnContentPathMounted().AddWeakLambda(this,
-		[this](const FString& InAssetPath, const FString& InContentPath)
-		{
-			// See if there is a new PluginInputAcions to add
-			const TSharedPtr<IPlugin>& Plugin = IPluginManager::Get().FindPluginFromPath(InAssetPath);
-			if (Plugin.IsValid())
-			{
-				AddPluginInputActions(TryGetPluginInputActionsFromPlugin(Plugin.ToSharedRef()));
-			}
-		}
-	);
-	FPackageName::OnContentPathDismounted().AddWeakLambda(this,
-		[this](const FString& InAssetPath, const FString& InContentPath)
-		{
-			// See if there is a PluginInputAcions to remove
-			const TSharedPtr<IPlugin>& Plugin = IPluginManager::Get().FindPluginFromPath(InAssetPath);
-			if (Plugin.IsValid())
-			{
-				RemovePluginInputActions(TryGetPluginInputActionsFromPlugin(Plugin.ToSharedRef()));
-			}
-		}
+	UGCBlueprintFunctionLibrary_ContentTools::UseContentFromDependentPlugins(UE_PLUGIN_NAME,
+		TDelegate<void(const IPlugin&)>::CreateUObject(this, &ThisClass::OnPluginAddContent),
+		TDelegate<void(const IPlugin&)>::CreateUObject(this, &ThisClass::OnPluginRemoveContent)
 	);
 }
 
-const UISPrimaryDataAsset_PluginInputActions* UISEngineSubsystem_InputActions::TryGetPluginInputActionsFromPlugin(const TSharedRef<IPlugin>& InPlugin)
+FSoftObjectPath UISEngineSubsystem_InputActions::GetPluginInputActionsAssetPath(const IPlugin& InPlugin)
 {
-	// Load the PluginInputActions data asset from the plugin if they depend on us
-	if (InPlugin->GetDescriptor().Plugins.ContainsByPredicate(
-			[](const FPluginReferenceDescriptor& InPluginReferenceDescriptor)
-			{
-				return (InPluginReferenceDescriptor.bEnabled) && (InPluginReferenceDescriptor.Name == TEXT(UE_PLUGIN_NAME));
-			})
-		)
-	{
-		const FSoftObjectPath InputActionsDataAssetPath = InPlugin->GetMountedAssetPath() / TEXT("Input") / TEXT("PDA_InputActions.PDA_InputActions");
-		const UObject* LoadedObject = UAssetManager::GetIfValid()->GetStreamableManager().LoadSynchronous(InputActionsDataAssetPath);
-		const UISPrimaryDataAsset_PluginInputActions* InputActionsDataAsset = Cast<UISPrimaryDataAsset_PluginInputActions>(LoadedObject);
-		return InputActionsDataAsset;
-	}
-
-	return nullptr;
+	return FSoftObjectPath(InPlugin.GetMountedAssetPath() / TEXT("Input") / TEXT("PDA_InputActions.PDA_InputActions"));
 }
 
-void UISEngineSubsystem_InputActions::AddPluginInputActions(const UISPrimaryDataAsset_PluginInputActions* InPluginInputActions)
+void UISEngineSubsystem_InputActions::OnPluginAddContent(const IPlugin& InPlugin)
 {
-	if (!IsValid(InPluginInputActions))
+	const FSoftObjectPath& PluginInputActionsAssetPath = GetPluginInputActionsAssetPath(InPlugin);
+	const UObject* LoadedAsset = UAssetManager::GetIfValid()->GetStreamableManager().LoadSynchronous(PluginInputActionsAssetPath);
+	const UISPrimaryDataAsset_PluginInputActions* PluginInputActionsAsset = Cast<UISPrimaryDataAsset_PluginInputActions>(LoadedAsset);
+
+	if (!IsValid(PluginInputActionsAsset))
 	{
 		return;
 	}
 
 	// Make sure we don't already have this data asset
-	if (PluginInputActions.Contains(InPluginInputActions))
+	if (PluginInputActions.Contains(PluginInputActionsAsset))
 	{
-		UE_LOG(LogISInputActionsSubsystem, Error, TEXT("%s() Input Actions data asset has already been added. Aborting. Culprit data asset [%s]"), ANSI_TO_TCHAR(__FUNCTION__), *(InPluginInputActions->GetFName().ToString()));
+		UE_LOG(LogISInputActionsSubsystem, Error, TEXT("%s() Input Actions data asset has already been added. Aborting. Culprit data asset [%s]"), ANSI_TO_TCHAR(__FUNCTION__), *(PluginInputActionsAsset->GetFName().ToString()));
 		check(0);
 		return;
 	}
 
 	// Make sure the data asset doesn't contain any already-added Input Actions
-	for (const TPair<FGameplayTag, TWeakObjectPtr<const UInputAction>>& PluginInputAction : InPluginInputActions->InputActionsToAdd)
+	for (const TPair<FGameplayTag, TWeakObjectPtr<const UInputAction>>& PluginInputAction : PluginInputActionsAsset->InputActionsToAdd)
 	{
 		if (InputActions.Contains(PluginInputAction.Key))
 		{
-			UE_LOG(LogISInputActionsSubsystem, Error, TEXT("%s() Tried adding Input Actions data asset but it contains an Input Action tag that already exists. Aborting. Culprit tag: [%s] from data asset [%s]"), ANSI_TO_TCHAR(__FUNCTION__), *(PluginInputAction.Key.ToString()), *(InPluginInputActions->GetFName().ToString()));
+			UE_LOG(LogISInputActionsSubsystem, Error, TEXT("%s() Tried adding Input Actions data asset but it contains an Input Action tag that already exists. Aborting. Culprit tag: [%s] from data asset [%s]"), ANSI_TO_TCHAR(__FUNCTION__), *(PluginInputAction.Key.ToString()), *(PluginInputActionsAsset->GetFName().ToString()));
 			check(0);
 			return;
 		}
 	}
 	// Add the data asset and all of its Input Actions
-	UE_LOG(LogISInputActionsSubsystem, Log, TEXT("%s() Adding plugin Input Actions data asset [%s]."), ANSI_TO_TCHAR(__FUNCTION__), *(InPluginInputActions->GetFName().ToString()));
-	
-	PluginInputActions.Add(InPluginInputActions);
-	for (const TPair<FGameplayTag, TWeakObjectPtr<const UInputAction>>& PluginInputAction : InPluginInputActions->InputActionsToAdd)
+	UE_LOG(LogISInputActionsSubsystem, Log, TEXT("%s() Adding plugin Input Actions data asset [%s]."), ANSI_TO_TCHAR(__FUNCTION__), *(PluginInputActionsAsset->GetFName().ToString()));
+
+	PluginInputActions.Add(PluginInputActionsAsset);
+	for (const TPair<FGameplayTag, TWeakObjectPtr<const UInputAction>>& PluginInputAction : PluginInputActionsAsset->InputActionsToAdd)
 	{
 		InputActions.Add(PluginInputAction);
 
 		OnPluginInputActionAdded.Broadcast(PluginInputAction);
-		UE_LOG(LogISInputActionsSubsystem, Log, TEXT("%s() New plugin Input Action [%s] added by data asset [%s]."), ANSI_TO_TCHAR(__FUNCTION__), *(PluginInputAction.Key.ToString()), *(InPluginInputActions->GetFName().ToString()));
+		UE_LOG(LogISInputActionsSubsystem, Log, TEXT("%s() New plugin Input Action [%s] added by data asset [%s]."), ANSI_TO_TCHAR(__FUNCTION__), *(PluginInputAction.Key.ToString()), *(PluginInputActionsAsset->GetFName().ToString()));
 	}
 }
-void UISEngineSubsystem_InputActions::RemovePluginInputActions(const UISPrimaryDataAsset_PluginInputActions* InPluginInputActions)
+void UISEngineSubsystem_InputActions::OnPluginRemoveContent(const IPlugin& InPlugin)
 {
-	if (!IsValid(InPluginInputActions))
+	const FSoftObjectPath& PluginInputActionsAssetPath = GetPluginInputActionsAssetPath(InPlugin);
+	const UObject* LoadedAsset = UAssetManager::GetIfValid()->GetStreamableManager().LoadSynchronous(PluginInputActionsAssetPath);
+	const UISPrimaryDataAsset_PluginInputActions* PluginInputActionsAsset = Cast<UISPrimaryDataAsset_PluginInputActions>(LoadedAsset);
+
+	if (!IsValid(PluginInputActionsAsset))
 	{
 		return;
 	}
 
 	// Make sure we have this data asset
-	if (PluginInputActions.Contains(InPluginInputActions) == false)
+	if (PluginInputActions.Contains(PluginInputActionsAsset) == false)
 	{
-		UE_LOG(LogISInputActionsSubsystem, Error, TEXT("%s() Input Actions data asset [%s] does not exist in the set."), ANSI_TO_TCHAR(__FUNCTION__), *(InPluginInputActions->GetFName().ToString()));
+		UE_LOG(LogISInputActionsSubsystem, Error, TEXT("%s() Input Actions data asset [%s] does not exist in the set."), ANSI_TO_TCHAR(__FUNCTION__), *(PluginInputActionsAsset->GetFName().ToString()));
 		check(0);
 		return;
 	}
 	// Remove the data asset and all of its Input Actions
-	UE_LOG(LogISInputActionsSubsystem, Log, TEXT("%s() Removing Input Actions data asset [%s] at plugin."), ANSI_TO_TCHAR(__FUNCTION__), *(InPluginInputActions->GetFName().ToString()));
+	UE_LOG(LogISInputActionsSubsystem, Log, TEXT("%s() Removing Input Actions data asset [%s] at plugin."), ANSI_TO_TCHAR(__FUNCTION__), *(PluginInputActionsAsset->GetFName().ToString()));
 
-	PluginInputActions.Remove(InPluginInputActions);
-	for (const TPair<FGameplayTag, TWeakObjectPtr<const UInputAction>>& PluginInputAction : InPluginInputActions->InputActionsToAdd)
+	PluginInputActions.Remove(PluginInputActionsAsset);
+	for (const TPair<FGameplayTag, TWeakObjectPtr<const UInputAction>>& PluginInputAction : PluginInputActionsAsset->InputActionsToAdd)
 	{
 		InputActions.Remove(PluginInputAction.Key);
 
 		OnPluginInputActionRemoved.Broadcast(PluginInputAction);
-		UE_LOG(LogISInputActionsSubsystem, Log, TEXT("%s() Plugin Input Action [%s] removed at by data asset [%s]."), ANSI_TO_TCHAR(__FUNCTION__), *(PluginInputAction.Key.ToString()), *(InPluginInputActions->GetFName().ToString()));
+		UE_LOG(LogISInputActionsSubsystem, Log, TEXT("%s() Plugin Input Action [%s] removed at by data asset [%s]."), ANSI_TO_TCHAR(__FUNCTION__), *(PluginInputAction.Key.ToString()), *(PluginInputActionsAsset->GetFName().ToString()));
 	}
 }

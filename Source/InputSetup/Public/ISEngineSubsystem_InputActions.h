@@ -55,20 +55,16 @@ public:
 		const UInputAction* GetInputAction(const FGameplayTag& InTag) const;
 
 
-	void AddPluginInputActions(const UISPrimaryDataAsset_PluginInputActions* InPluginInputActions);
-	void RemovePluginInputActions(const UISPrimaryDataAsset_PluginInputActions* InPluginInputActions);
-
 	mutable FISInputActionSetupDelegate OnPluginInputActionAdded;
 	mutable FISInputActionSetupDelegate OnPluginInputActionRemoved;
+
+	static FSoftObjectPath GetPluginInputActionsAssetPath(const IPlugin& InPlugin);
 
 protected:
 	virtual void PostInitProperties() override; // after Config is loaded
 
 	void OnAssetManagerCreated();
 
-	/**
-	 * Loads the PluginInputActions data asset if the plugin depends on us.
-	 * NOTE: Does not check whether the plugin content is mounted or not, e.g., via FPackageName::MountPointExists().
-	 */
-	static const UISPrimaryDataAsset_PluginInputActions* TryGetPluginInputActionsFromPlugin(const TSharedRef<IPlugin>& InPlugin);
+	void OnPluginAddContent(const IPlugin& InPlugin);
+	void OnPluginRemoveContent(const IPlugin& InPlugin);
 };
