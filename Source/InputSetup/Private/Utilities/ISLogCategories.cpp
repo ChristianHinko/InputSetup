@@ -7,4 +7,4 @@
 
 DEFINE_LOG_CATEGORY(LogISInputSetupModule)
 
-DEFINE_LOG_CATEGORY(LogISInputActionsSubsystem)
+DEFINE_LOG_CATEGORY(LogISObjectReferenceLibrarySubsystem)

@@ -8,4 +8,4 @@
 
 DECLARE_LOG_CATEGORY_EXTERN(LogISInputSetupModule, Log, All)
 
-DECLARE_LOG_CATEGORY_EXTERN(LogISInputActionsSubsystem, Log, All)
+DECLARE_LOG_CATEGORY_EXTERN(LogISObjectReferenceLibrarySubsystem, Log, All)
