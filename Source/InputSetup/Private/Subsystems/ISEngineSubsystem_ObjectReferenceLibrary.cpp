@@ -92,7 +92,7 @@ FSoftObjectPath UISEngineSubsystem_ObjectReferenceLibrary::GetPluginObjectRefere
 void UISEngineSubsystem_ObjectReferenceLibrary::OnPluginAddContent(const IPlugin& InPlugin)
 {
 	const FSoftObjectPath& PluginObjectReferenceCollectionAssetPath = GetPluginObjectReferenceCollectionAssetPath(InPlugin);
-	const UObject* LoadedAsset = UAssetManager::GetIfValid()->GetStreamableManager().LoadSynchronous(PluginObjectReferenceCollectionAssetPath);
+	const UObject* LoadedAsset = UAssetManager::Get().GetStreamableManager().LoadSynchronous(PluginObjectReferenceCollectionAssetPath);
 	const UISPrimaryDataAsset_PluginObjectReferenceCollection* PluginObjectReferenceCollection = Cast<UISPrimaryDataAsset_PluginObjectReferenceCollection>(LoadedAsset);
 
 	if (!IsValid(PluginObjectReferenceCollection))
@@ -135,7 +135,7 @@ void UISEngineSubsystem_ObjectReferenceLibrary::OnPluginAddContent(const IPlugin
 void UISEngineSubsystem_ObjectReferenceLibrary::OnPluginRemoveContent(const IPlugin& InPlugin)
 {
 	const FSoftObjectPath& PluginObjectReferenceCollectionAssetPath = GetPluginObjectReferenceCollectionAssetPath(InPlugin);
-	const UObject* LoadedAsset = UAssetManager::GetIfValid()->GetStreamableManager().LoadSynchronous(PluginObjectReferenceCollectionAssetPath);
+	const UObject* LoadedAsset = UAssetManager::Get().GetStreamableManager().LoadSynchronous(PluginObjectReferenceCollectionAssetPath);
 	const UISPrimaryDataAsset_PluginObjectReferenceCollection* PluginObjectReferenceCollection = Cast<UISPrimaryDataAsset_PluginObjectReferenceCollection>(LoadedAsset);
 
 	if (!IsValid(PluginObjectReferenceCollection))
