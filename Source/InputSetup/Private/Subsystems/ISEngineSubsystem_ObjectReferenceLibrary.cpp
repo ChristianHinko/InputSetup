@@ -9,7 +9,7 @@
 #endif // WITH_EDITOR
 #include "Subsystems/ISPrimaryDataAsset_PluginObjectReferenceCollection.h"
 #include "Engine/AssetManager.h"
-#include "BlueprintFunctionLibraries/GCBlueprintFunctionLibrary_ContentTools.h"
+#include "GCUtils_Plugin.h"
 #include "Interfaces/IPluginManager.h"
 
 
@@ -77,7 +77,7 @@ const UInputAction* UISEngineSubsystem_ObjectReferenceLibrary::GetInputAction(co
 
 void UISEngineSubsystem_ObjectReferenceLibrary::OnAssetManagerCreated()
 {
-	UGCBlueprintFunctionLibrary_ContentTools::UseContentFromDependentPlugins(UE_PLUGIN_NAME,
+	GCUtils::Plugin::UseContentFromDependentPlugins(UE_PLUGIN_NAME,
 			TDelegate<void(const IPlugin&)>::CreateUObject(this, &ThisClass::OnPluginAddContent),
 			TDelegate<void(const IPlugin&)>::CreateUObject(this, &ThisClass::OnPluginRemoveContent)
 		);
