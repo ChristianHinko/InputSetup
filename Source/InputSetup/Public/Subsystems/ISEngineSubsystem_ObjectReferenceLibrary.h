@@ -19,9 +19,9 @@ DECLARE_MULTICAST_DELEGATE_OneParam(FISInputActionReferenceDelegate, const TPair
 
 /**
  * Subsystem holding references to important objects and/or assets which can be retrieved via Gameplay Tag.
- * 
+ *
  * Holds all InputActions for the game.
- * 
+ *
  * To add references from your game: Configure InputSetup in project settings.
  * To add references from a plugin: Use ISPrimaryDataAsset_PluginObjectReferenceCollection.
  */
