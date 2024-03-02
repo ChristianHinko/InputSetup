@@ -7,6 +7,6 @@
 
 namespace ISNativeGameplayTags
 {
-	UE_DEFINE_GAMEPLAY_TAG(InputAction,									TEXT("InputAction"))
-	UE_DEFINE_GAMEPLAY_TAG(InputAction_None,							TEXT("InputAction.None"))
+    UE_DEFINE_GAMEPLAY_TAG(InputAction,                                    TEXT("InputAction"))
+    UE_DEFINE_GAMEPLAY_TAG(InputAction_None,                            TEXT("InputAction.None"))
 }

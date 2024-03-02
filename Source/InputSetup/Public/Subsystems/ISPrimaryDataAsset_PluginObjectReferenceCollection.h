@@ -20,9 +20,9 @@ class UInputAction;
 UCLASS(Const)
 class INPUTSETUP_API UISPrimaryDataAsset_PluginObjectReferenceCollection : public UPrimaryDataAsset
 {
-	GENERATED_BODY()
+    GENERATED_BODY()
 
 public:
-	UPROPERTY(EditDefaultsOnly)
-		TMap<FGameplayTag, TObjectPtr<UInputAction>> PluginInputActionReferences;
+    UPROPERTY(EditDefaultsOnly)
+        TMap<FGameplayTag, TObjectPtr<UInputAction>> PluginInputActionReferences;
 };

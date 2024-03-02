@@ -28,52 +28,52 @@ DECLARE_MULTICAST_DELEGATE_OneParam(FISInputActionReferenceDelegate, const TPair
 UCLASS(Config="ISObjectReferenceLibrary")
 class INPUTSETUP_API UISEngineSubsystem_ObjectReferenceLibrary : public UEngineSubsystem
 {
-	GENERATED_BODY()
+    GENERATED_BODY()
 
 protected:
-	/** Contributions from plugins to our object references. */
-	UPROPERTY(VisibleDefaultsOnly, DisplayName="Plugin Object Reference Collections (Read-Only)")
-		TSet<TObjectPtr<const UISPrimaryDataAsset_PluginObjectReferenceCollection>> PluginObjectReferenceCollections;
+    /** Contributions from plugins to our object references. */
+    UPROPERTY(VisibleDefaultsOnly, DisplayName="Plugin Object Reference Collections (Read-Only)")
+        TSet<TObjectPtr<const UISPrimaryDataAsset_PluginObjectReferenceCollection>> PluginObjectReferenceCollections;
 
 
-	/** InputAction references from the game project added via config (project settings). */
-	UPROPERTY(EditDefaultsOnly, Config, Category="InputAction")
-		TMap<FGameplayTag, TSoftObjectPtr<const UInputAction>> GameProjectInputActionReferences;
+    /** InputAction references from the game project added via config (project settings). */
+    UPROPERTY(EditDefaultsOnly, Config, Category="InputAction")
+        TMap<FGameplayTag, TSoftObjectPtr<const UInputAction>> GameProjectInputActionReferences;
 
-	/**
-	 * Combined map of InputAction references from the game project and the plugins.
-	 */
-	UPROPERTY(Transient)
-		TMap<FGameplayTag, TWeakObjectPtr<const UInputAction>> InputActionReferences;
+    /**
+     * Combined map of InputAction references from the game project and the plugins.
+     */
+    UPROPERTY(Transient)
+        TMap<FGameplayTag, TWeakObjectPtr<const UInputAction>> InputActionReferences;
 
 public:
-	UISEngineSubsystem_ObjectReferenceLibrary();
+    UISEngineSubsystem_ObjectReferenceLibrary();
 
-	//  BEGIN UObject interface
-	virtual void PostInitProperties() override;
-	//  END UObject interface
+    //  BEGIN UObject interface
+    virtual void PostInitProperties() override;
+    //  END UObject interface
 
-	//  BEGIN USubsystem interface
-	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
-	virtual void Deinitialize() override;
-	//  END USubsystem interface
+    //  BEGIN USubsystem interface
+    virtual void Initialize(FSubsystemCollectionBase& Collection) override;
+    virtual void Deinitialize() override;
+    //  END USubsystem interface
 
-	/**
-	 * Get an InputAction via gameplay tag.
-	 */
-	UFUNCTION(BlueprintPure, Category="InputAction")
-		const UInputAction* GetInputAction(const FGameplayTag& InGameplayTag) const;
+    /**
+     * Get an InputAction via gameplay tag.
+     */
+    UFUNCTION(BlueprintPure, Category="InputAction")
+        const UInputAction* GetInputAction(const FGameplayTag& InGameplayTag) const;
 
-	const TMap<FGameplayTag, TWeakObjectPtr<const UInputAction>>& GetAllInputActions() const { return InputActionReferences; }
+    const TMap<FGameplayTag, TWeakObjectPtr<const UInputAction>>& GetAllInputActions() const { return InputActionReferences; }
 
-	static FSoftObjectPath GetPluginObjectReferenceCollectionAssetPath(const IPlugin& InPlugin);
+    static FSoftObjectPath GetPluginObjectReferenceCollectionAssetPath(const IPlugin& InPlugin);
 
-	FISInputActionReferenceDelegate OnInputActionAdded;
-	FISInputActionReferenceDelegate OnInputActionRemoved;
+    FISInputActionReferenceDelegate OnInputActionAdded;
+    FISInputActionReferenceDelegate OnInputActionRemoved;
 
 protected:
-	virtual void OnAssetManagerCreated();
+    virtual void OnAssetManagerCreated();
 
-	virtual void OnPluginAddContent(const IPlugin& InPlugin);
-	virtual void OnPluginRemoveContent(const IPlugin& InPlugin);
+    virtual void OnPluginAddContent(const IPlugin& InPlugin);
+    virtual void OnPluginRemoveContent(const IPlugin& InPlugin);
 };

@@ -14,8 +14,8 @@
 class FInputSetupModule : public FDefaultModuleImpl
 {
 public:
-	//  BEGIN IModuleInterface interface
-	virtual void StartupModule() override;
-	virtual void ShutdownModule() override;
-	//  END IModuleInterface interface
+    //  BEGIN IModuleInterface interface
+    virtual void StartupModule() override;
+    virtual void ShutdownModule() override;
+    //  END IModuleInterface interface
 };

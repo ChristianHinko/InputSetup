@@ -4,21 +4,21 @@ using UnrealBuildTool;
 
 public class InputSetup : ModuleRules
 {
-	public InputSetup(ReadOnlyTargetRules Target) : base(Target)
-	{
-		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
-		PrivatePCHHeaderFile = "Private/InputSetupPrivatePCH.h";
+    public InputSetup(ReadOnlyTargetRules Target) : base(Target)
+    {
+        PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
+        PrivatePCHHeaderFile = "Private/InputSetupPrivatePCH.h";
 
-		PublicDependencyModuleNames.AddRange(new string[] { "Core" });
-		PrivateDependencyModuleNames.AddRange(new string[] { "CoreUObject", "Engine" });
+        PublicDependencyModuleNames.AddRange(new string[] { "Core" });
+        PrivateDependencyModuleNames.AddRange(new string[] { "CoreUObject", "Engine" });
 
-		PrivateDependencyModuleNames.AddRange(
-			new string[]
-			{
-				"EnhancedInput",
-				"GameplayTags",
-				"GameCore"
-			}
-		);
-	}
+        PrivateDependencyModuleNames.AddRange(
+            new string[]
+            {
+                "EnhancedInput",
+                "GameplayTags",
+                "GameCore"
+            }
+        );
+    }
 }
