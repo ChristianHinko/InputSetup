@@ -66,7 +66,7 @@ public:
 
     const TMap<FGameplayTag, TWeakObjectPtr<const UInputAction>>& GetAllInputActions() const { return InputActionReferences; }
 
-    static FSoftObjectPath GetPluginObjectReferenceCollectionAssetPath(const IPlugin& InPlugin);
+    static FSoftObjectPath GetPluginObjectReferenceCollectionAssetPath(const TSharedRef<const IPlugin>& InPlugin);
 
     FISInputActionReferenceDelegate OnInputActionAdded;
     FISInputActionReferenceDelegate OnInputActionRemoved;
@@ -74,6 +74,6 @@ public:
 protected:
     virtual void OnAssetManagerCreated();
 
-    virtual void OnPluginAddContent(const IPlugin& InPlugin);
-    virtual void OnPluginRemoveContent(const IPlugin& InPlugin);
+    virtual void OnPluginAddContent(TSharedRef<IPlugin> InPlugin);
+    virtual void OnPluginRemoveContent(TSharedRef<IPlugin> InPlugin);
 };

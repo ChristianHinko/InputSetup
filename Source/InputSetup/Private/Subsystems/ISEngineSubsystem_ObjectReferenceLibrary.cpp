@@ -77,19 +77,20 @@ const UInputAction* UISEngineSubsystem_ObjectReferenceLibrary::GetInputAction(co
 
 void UISEngineSubsystem_ObjectReferenceLibrary::OnAssetManagerCreated()
 {
-    GCUtils::Plugin::UseContentFromDependentPlugins(UE_PLUGIN_NAME,
-            TDelegate<void(const IPlugin&)>::CreateUObject(this, &ThisClass::OnPluginAddContent),
-            TDelegate<void(const IPlugin&)>::CreateUObject(this, &ThisClass::OnPluginRemoveContent)
+    GCUtils::Plugin::UseContentFromDependentPlugins(
+        TEXT(UE_PLUGIN_NAME),
+        GCUtils::Plugin::FPluginRefNativeDelegate::CreateUObject(this, &ThisClass::OnPluginAddContent),
+        GCUtils::Plugin::FPluginRefNativeDelegate::CreateUObject(this, &ThisClass::OnPluginRemoveContent)
         );
 }
 
-FSoftObjectPath UISEngineSubsystem_ObjectReferenceLibrary::GetPluginObjectReferenceCollectionAssetPath(const IPlugin& InPlugin)
+FSoftObjectPath UISEngineSubsystem_ObjectReferenceLibrary::GetPluginObjectReferenceCollectionAssetPath(const TSharedRef<const IPlugin>& InPlugin)
 {
-    const FString AssetName = (TEXT("PORC_") + InPlugin.GetName());
-    return FSoftObjectPath(InPlugin.GetMountedAssetPath() / TEXT("Input") / AssetName + TEXT('.') + AssetName);
+    const FString AssetName = (TEXT("PORC_") + InPlugin->GetName());
+    return FSoftObjectPath(InPlugin->GetMountedAssetPath() / TEXT("Input") / AssetName + TEXT('.') + AssetName);
 }
 
-void UISEngineSubsystem_ObjectReferenceLibrary::OnPluginAddContent(const IPlugin& InPlugin)
+void UISEngineSubsystem_ObjectReferenceLibrary::OnPluginAddContent(TSharedRef<IPlugin> InPlugin)
 {
     const FSoftObjectPath& PluginObjectReferenceCollectionAssetPath = GetPluginObjectReferenceCollectionAssetPath(InPlugin);
     const UObject* LoadedAsset = UAssetManager::Get().GetStreamableManager().LoadSynchronous(PluginObjectReferenceCollectionAssetPath);
@@ -132,7 +133,7 @@ void UISEngineSubsystem_ObjectReferenceLibrary::OnPluginAddContent(const IPlugin
     }
 }
 
-void UISEngineSubsystem_ObjectReferenceLibrary::OnPluginRemoveContent(const IPlugin& InPlugin)
+void UISEngineSubsystem_ObjectReferenceLibrary::OnPluginRemoveContent(TSharedRef<IPlugin> InPlugin)
 {
     const FSoftObjectPath& PluginObjectReferenceCollectionAssetPath = GetPluginObjectReferenceCollectionAssetPath(InPlugin);
     const UObject* LoadedAsset = UAssetManager::Get().GetStreamableManager().LoadSynchronous(PluginObjectReferenceCollectionAssetPath);
