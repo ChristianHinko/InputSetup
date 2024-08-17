@@ -90,7 +90,7 @@ FSoftObjectPath UISEngineSubsystem_ObjectReferenceLibrary::GetPluginObjectRefere
     return FSoftObjectPath(InPlugin->GetMountedAssetPath() / TEXT("Input") / AssetName + TEXT('.') + AssetName);
 }
 
-void UISEngineSubsystem_ObjectReferenceLibrary::OnPluginAddContent(TSharedRef<IPlugin> InPlugin)
+void UISEngineSubsystem_ObjectReferenceLibrary::OnPluginAddContent(TSharedRef<IPlugin>&& InPlugin)
 {
     const FSoftObjectPath& PluginObjectReferenceCollectionAssetPath = GetPluginObjectReferenceCollectionAssetPath(InPlugin);
     const UObject* LoadedAsset = UAssetManager::Get().GetStreamableManager().LoadSynchronous(PluginObjectReferenceCollectionAssetPath);
@@ -133,7 +133,7 @@ void UISEngineSubsystem_ObjectReferenceLibrary::OnPluginAddContent(TSharedRef<IP
     }
 }
 
-void UISEngineSubsystem_ObjectReferenceLibrary::OnPluginRemoveContent(TSharedRef<IPlugin> InPlugin)
+void UISEngineSubsystem_ObjectReferenceLibrary::OnPluginRemoveContent(TSharedRef<IPlugin>&& InPlugin)
 {
     const FSoftObjectPath& PluginObjectReferenceCollectionAssetPath = GetPluginObjectReferenceCollectionAssetPath(InPlugin);
     const UObject* LoadedAsset = UAssetManager::Get().GetStreamableManager().LoadSynchronous(PluginObjectReferenceCollectionAssetPath);

@@ -74,6 +74,6 @@ public:
 protected:
     virtual void OnAssetManagerCreated();
 
-    virtual void OnPluginAddContent(TSharedRef<IPlugin> InPlugin);
-    virtual void OnPluginRemoveContent(TSharedRef<IPlugin> InPlugin);
+    virtual void OnPluginAddContent(TSharedRef<IPlugin>&& InPlugin);
+    virtual void OnPluginRemoveContent(TSharedRef<IPlugin>&& InPlugin);
 };
