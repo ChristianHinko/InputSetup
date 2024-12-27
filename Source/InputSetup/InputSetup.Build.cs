@@ -17,7 +17,8 @@ public class InputSetup : ModuleRules
             {
                 "EnhancedInput",
                 "GameplayTags",
-                "GameCore"
+                "GameCore",
+                "Projects"
             }
         );
     }
