@@ -1,12 +1,12 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "Subsystems/ISEngineSubsystem_ObjectReferenceLibrary.h"
+#include "ISEngineSubsystem_ObjectReferenceLibrary.h"
 
 #include "InputAction.h"
 #if WITH_EDITOR
 #include "ISettingsModule.h"
 #endif // #if WITH_EDITOR
-#include "Subsystems/ISPrimaryDataAsset_PluginObjectReferenceCollection.h"
+#include "ISPrimaryDataAsset_PluginObjectReferenceCollection.h"
 #include "Engine/AssetManager.h"
 #include "GCUtils_Plugin.h"
 #include "Interfaces/IPluginManager.h"
