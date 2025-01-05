@@ -1,20 +1,15 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "InputSetupModule.h"
-
-
-
-#define LOCTEXT_NAMESPACE "FInputSetupModule"
 
 void FInputSetupModule::StartupModule()
 {
+    IModuleInterface::StartupModule();
 }
 
 void FInputSetupModule::ShutdownModule()
 {
+    IModuleInterface::ShutdownModule();
 }
 
-#undef LOCTEXT_NAMESPACE
-
-IMPLEMENT_MODULE(FInputSetupModule, InputSetup)
+IMPLEMENT_MODULE(FInputSetupModule, InputSetup);

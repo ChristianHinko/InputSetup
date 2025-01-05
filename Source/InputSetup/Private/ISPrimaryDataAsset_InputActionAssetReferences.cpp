@@ -1,3 +1,3 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "ISPrimaryDataAsset_PluginObjectReferenceCollection.h"
+#include "ISPrimaryDataAsset_InputActionAssetReferences.h"

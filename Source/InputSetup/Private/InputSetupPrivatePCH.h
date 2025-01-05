@@ -3,5 +3,4 @@
 #pragma once
 
 #include "EngineSharedPCH.h"
-#include "ISLogCategories.h"
 #include "ISNativeGameplayTags.h"

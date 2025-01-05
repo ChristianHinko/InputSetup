@@ -2,11 +2,8 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-
-//#include "InputSetupModule.generated.h" // uncomment if we ever need reflection here
-
-
+#include "Modules/ModuleInterface.h"
+#include "Modules/ModuleManager.h"
 
 /**
  *
@@ -14,8 +11,9 @@
 class FInputSetupModule : public FDefaultModuleImpl
 {
 public:
-    //  BEGIN IModuleInterface interface
+
+    // ~ IModuleInterface overrides.
     virtual void StartupModule() override;
     virtual void ShutdownModule() override;
-    //  END IModuleInterface interface
+    // ~ IModuleInterface overrides.
 };

@@ -8,12 +8,10 @@
 
 #include "ISActorComponent_PawnExtension.generated.h"
 
-INPUTSETUP_API DECLARE_LOG_CATEGORY_EXTERN(LogISActorComponent_PawnExtension, Log, All);
-
 /**
- * @brief Sets up input for Pawns.
+ * @brief Sets up input for pawns.
  */
-UCLASS(ClassGroup="InputSetup", Within="Pawn", meta=(BlueprintSpawnableComponent))
+UCLASS(Within="Pawn", ClassGroup="InputSetup")
 class INPUTSETUP_API UISActorComponent_PawnExtension : public UActorComponent
 {
     GENERATED_BODY()

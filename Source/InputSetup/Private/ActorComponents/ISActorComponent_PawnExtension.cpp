@@ -10,7 +10,7 @@
 #include "GCUtils_Log.h"
 #include "GCUtils_String.h"
 
-DEFINE_LOG_CATEGORY(LogISActorComponent_PawnExtension);
+DEFINE_LOG_CATEGORY_STATIC(LogISActorComponent_PawnExtension, Log, All);
 
 UISActorComponent_PawnExtension::UISActorComponent_PawnExtension(const FObjectInitializer& ObjectInitializer)
     : Super(ObjectInitializer)
