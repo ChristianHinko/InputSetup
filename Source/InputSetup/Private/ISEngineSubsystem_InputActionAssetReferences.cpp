@@ -394,7 +394,7 @@ void UISEngineSubsystem_InputActionAssetReferences::AddGameProjectAssetReference
     }
 
     constexpr bool shouldReportErrors = true;
-    GCUtils::AssetStreaming::ForEachSuccessfullyLoadedAsset<shouldReportErrors, UInputAction>(
+    GCUtils::AssetStreaming::ForEachSuccessfullyLoadedAsset<UInputAction, shouldReportErrors>(
         MoveTemp(streamableHandle).ToSharedRef(),
         [this, tagToInputActionPairIterator = GameProjectInputActionReferences.CreateConstIterator()]
             (const UInputAction& inLoadedAsset, const int32 inIndex, const FStreamableHandle& inStreamableHandle) mutable
@@ -452,7 +452,7 @@ void UISEngineSubsystem_InputActionAssetReferences::OnPluginAddContent(TSharedRe
 
     constexpr bool shouldReportErrors = false;
     const UISPrimaryDataAsset_InputActionAssetReferences* loadedAssetReferenceDataAsset =
-        GCUtils::AssetStreaming::GetLoadedAsset<shouldReportErrors, UISPrimaryDataAsset_InputActionAssetReferences>(MoveTemp(streamableHandle));
+        GCUtils::AssetStreaming::GetLoadedAsset<UISPrimaryDataAsset_InputActionAssetReferences, shouldReportErrors>(MoveTemp(streamableHandle));
 
     if (!loadedAssetReferenceDataAsset)
     {
