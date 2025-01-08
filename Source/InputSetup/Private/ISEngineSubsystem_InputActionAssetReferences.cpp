@@ -356,25 +356,76 @@ void UISEngineSubsystem_InputActionAssetReferences::AddGameProjectAssetReference
 {
     TRACE_CPUPROFILER_EVENT_SCOPE(UISEngineSubsystem_InputActionAssetReferences::AddGameProjectAssetReferences);
 
-    // TODO @techdebt Christian: Make single asset load request instead of many individual ones.
-    for (const TPair<FGameplayTag, TSoftObjectPtr<const UInputAction>>& tagToInputActionPair : GameProjectInputActionReferences)
+    TSharedPtr<FStreamableHandle> streamableHandle;
+
     {
+        TArray<FSoftObjectPath> assetPaths;
+        assetPaths.Reserve(GameProjectInputActionReferences.Num());
+
+        for (const TPair<FGameplayTag, TSoftObjectPtr<const UInputAction>>& tagToInputActionPair : GameProjectInputActionReferences)
+        {
+            assetPaths.Emplace(tagToInputActionPair.Value.ToSoftObjectPath());
+        }
+
         // No need to have the streamable handle hold our loaded assets in memory as we will already
         // store strong references to them ourselves.
         constexpr bool shouldManageActiveHandle = false;
 
-        TSharedRef<FStreamableHandle> streamableHandle =
-            GCUtils::AssetStreaming::LoadSyncChecked<shouldManageActiveHandle>(
+        // Load request may be invalid if no valid paths are specified so log logs instead of errors.
+        constexpr bool shouldReportErrors = false;
+
+        streamableHandle =
+            GCUtils::AssetStreaming::LoadSync<shouldManageActiveHandle, shouldReportErrors>(
                 inAssetManager.GetStreamableManager(),
-                FSoftObjectPath(tagToInputActionPair.Value.ToSoftObjectPath())
+                MoveTemp(assetPaths)
                 );
-
-        constexpr bool shouldReportErrors = true;
-        const UInputAction* loadedInputAction =
-            GCUtils::AssetStreaming::GetLoadedAsset<shouldReportErrors, UInputAction>(MoveTemp(streamableHandle));
-
-        TryAddReferencedInputAction(tagToInputActionPair.Key, loadedInputAction);
     }
+
+    if (!streamableHandle)
+    {
+        GC_LOG_STR_UOBJECT(
+            this,
+            LogISEngineSubsystem_InputActionAssetReferences,
+            Log,
+            GCUtils::Materialize(TStringBuilder<512>())
+                << TEXT("No valid load request could be created for the game project input action references map.")
+            );
+        return;
+    }
+
+    constexpr bool shouldReportErrors = true;
+    GCUtils::AssetStreaming::ForEachSuccessfullyLoadedAsset<shouldReportErrors, UInputAction>(
+        MoveTemp(streamableHandle).ToSharedRef(),
+        [this, tagToInputActionPairIterator = GameProjectInputActionReferences.CreateConstIterator()]
+            (const UInputAction& inLoadedAsset, const int32 inIndex, const FStreamableHandle& inStreamableHandle) mutable
+        {
+            // Find the tag-to-input-action pair that corresponds with this loaded asset and add them. We reuse
+            // the same iterator across these callbacks as the order should be the same and we can continue progressing
+            // the iterator as we go.
+            while (true)
+            {
+                checkf(tagToInputActionPairIterator, TEXT("The map iterator should always be valid here since it doesn't make sense for the iterator to surpass the assets we loaded."));
+
+                ON_SCOPE_EXIT
+                {
+                    ++tagToInputActionPairIterator;
+                };
+
+                const TSoftObjectPtr<const UInputAction>& inputActionSoft = tagToInputActionPairIterator.Value();
+
+                if (TSoftObjectPtr<const UInputAction>(&inLoadedAsset) != inputActionSoft)
+                {
+                    // This current tag-to-input-action pair must've been one that was skipped due to it failing to load.
+                    continue;
+                }
+
+                const FGameplayTag& tag = tagToInputActionPairIterator.Key();
+
+                TryAddReferencedInputAction(tag, inLoadedAsset);
+                return true;
+            }
+        }
+        );
 }
 
 void UISEngineSubsystem_InputActionAssetReferences::OnPluginAddContent(TSharedRef<IPlugin>&& inPlugin)
@@ -412,7 +463,7 @@ void UISEngineSubsystem_InputActionAssetReferences::OnPluginAddContent(TSharedRe
             GCUtils::Materialize(TStringBuilder<512>())
                 << TEXT("No asset references data asset found for plugin '") << inPlugin->GetName() << TEXT("'.")
                 TEXT(" ")
-                TEXT("Asset path searched: '") << streamableHandle->GetDebugName() << TEXT("'.");
+                TEXT("Asset path searched: '") << streamableHandle->GetDebugName() << TEXT("'.")
             );
         return;
     }
