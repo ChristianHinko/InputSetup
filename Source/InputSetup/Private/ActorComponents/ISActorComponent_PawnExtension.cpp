@@ -2,7 +2,7 @@
 
 #include "ActorComponents/ISActorComponent_PawnExtension.h"
 
-#include "GCUtils.h"
+#include "GCUtils_UObjectSystem.h"
 #include "GameFramework/Pawn.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
@@ -29,7 +29,7 @@ void UISActorComponent_PawnExtension::OnOwnerPawnClientRestart()
         TEXT("On owner pawn client restart. Attempting to add input mapping contexts."));
 
     check(IsValid(GetOwner()));
-    const APawn& owningPawn = GCUtils::StaticCastChecked<APawn&>(GetOwner());
+    const APawn& owningPawn = GCUtils::UObjectSystem::CastChecked<APawn&>(GetOwner());
 
     const APlayerController* playerController = Cast<APlayerController>(owningPawn.GetController());
     if (!ensure(playerController))
